@@ -16,15 +16,29 @@ func (s *FooStorage) Put(id int, val any) error {
 	return nil
 }
 
+type BarStorage struct {
+}
+
+func (s *BarStorage) Get(id int) (any, error) {
+	return nil, nil
+}
+
+func (s *BarStorage) Put(id int, val any) error {
+	return nil
+}
+
 type Server struct {
 	store Storage
+}
+
+func updateValue(id int, val any, store Storage) error {
+	return store.Put(id, val)
 }
 
 func main() {
 	s := &Server{
 		store: &FooStorage{},
 	}
-	s.store.Get(1)
-	s.store.Put(1, "foo")
+	updateValue(1, "petre", s.store)
 
 }
