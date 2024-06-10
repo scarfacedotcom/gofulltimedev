@@ -1,8 +1,18 @@
 package main
 
-type Storage interface {
-	Get(id int) (any, error)
+type Putter interface {
 	Put(id int, val any) error
+}
+
+type Storage interface {
+	Putter
+	Get(id int) (any, error)
+}
+type simplePutter struct {
+}
+
+func (s *simplePutter) Put(id int, val any) error {
+	return nil
 }
 
 type FooStorage struct {
@@ -31,8 +41,8 @@ type Server struct {
 	store Storage
 }
 
-func updateValue(id int, val any, store Storage) error {
-	return store.Put(id, val)
+func updateValue(id int, val any, p Putter) error {
+	return p.Put(id, val)
 }
 
 func main() {
