@@ -5,5 +5,5 @@ func GetAge() int {
 }
 
 func GetName() string {
-	return "scar"
+	return "scar face dot sol"
 }
