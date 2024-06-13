@@ -16,5 +16,11 @@ func NewCustomMap[K comparable, V any]() *CustomMap[K, V] {
 }
 
 func main() {
+	m1 := NewCustomMap[string, int]()
+	m1.Insert("scar", 1)
+	m1.Insert("face", 2)
 
+	m2 := NewCustomMap[int, float64]()
+	m2.Insert(1, 9.99)
+	m2.Insert(2, 100.889)
 }
