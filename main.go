@@ -1,26 +1,22 @@
 package main
 
-type CustomMap[K comparable, V any] struct {
-	data map[K]V
+import "fmt"
+
+type Player struct {
+	HP int
 }
 
-func (m *CustomMap[K, V]) Insert(k K, v V) error {
-	m.data[k] = v
-	return nil
-}
+func takeDamage(player *Player, amount int) {
+	player.HP -= amount
+	fmt.Println("PLayer is taking damage, New HP --->", player.HP)
 
-func NewCustomMap[K comparable, V any]() *CustomMap[K, V] {
-	return &CustomMap[K, V]{
-		data: make(map[K]V),
-	}
 }
 
 func main() {
-	m1 := NewCustomMap[string, int]()
-	m1.Insert("scar", 1)
-	m1.Insert("face", 2)
+	player := Player{
+		HP: 200,
+	}
+	takeDamage(&player, 10)
 
-	m2 := NewCustomMap[int, float64]()
-	m2.Insert(1, 9.99)
-	m2.Insert(2, 100.889)
+	fmt.Printf("%+v\n", player)
 }
