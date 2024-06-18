@@ -1,23 +1,16 @@
 package main
 
-import (
-	"fmt"
-	"time"
-)
-
-func fetchResource(n int) string {
-	time.Sleep(time.Second * 2)
-	return fmt.Sprintf("result %d", n)
-}
+import "fmt"
 
 func main() {
+	msgch := make(chan string, 128)
+	msgch <- "A"
+	msgch <- "B"
+	msgch <- "C"
+	close(msgch)
 
-	resultch := make(chan string)
-
-	go func() {
-		result := <-resultch
-		fmt.Println(result)
-	}()
-	resultch <- "foo"
+	for msg := range msgch {
+		fmt.Println(msg)
+	}
 
 }
