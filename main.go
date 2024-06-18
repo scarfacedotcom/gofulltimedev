@@ -1,22 +1,23 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
-type Player struct {
-	HP int
-}
-
-func takeDamage(player *Player, amount int) {
-	player.HP -= amount
-	fmt.Println("PLayer is taking damage, New HP --->", player.HP)
-
+func fetchResource(n int) string {
+	time.Sleep(time.Second * 2)
+	return fmt.Sprintf("result %d", n)
 }
 
 func main() {
-	player := Player{
-		HP: 200,
-	}
-	takeDamage(&player, 10)
 
-	fmt.Printf("%+v\n", player)
+	resultch := make(chan string)
+
+	go func() {
+		result := <-resultch
+		fmt.Println(result)
+	}()
+	resultch <- "foo"
+
 }
