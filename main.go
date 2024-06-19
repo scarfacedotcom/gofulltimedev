@@ -2,15 +2,32 @@ package main
 
 import "fmt"
 
-func main() {
-	msgch := make(chan string, 128)
-	msgch <- "A"
-	msgch <- "B"
-	msgch <- "C"
-	close(msgch)
+type Server struct {
+	quitch chan struct{}
+	msgch  chan string
+}
 
-	for msg := range msgch {
-		fmt.Println(msg)
+func newSever() *Server {
+	return &Server{
+		quitch: make(chan struct{}),
+		msgch:  make(chan string),
 	}
+}
+
+func (s *Server) start() {
+	fmt.Println("starting server")
+}
+
+func (s *Server) loop() {
+	for {
+		select {
+		case <-s.quitch:
+		case msg := <-s.msgch:
+			_ = msg
+		}
+	}
+}
+
+func main() {
 
 }
