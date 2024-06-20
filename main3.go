@@ -37,7 +37,7 @@ func (s *BarStorage) Put(id int, val any) error {
 	return nil
 }
 
-type Server struct {
+type Servers struct {
 	store Storage
 }
 
@@ -46,7 +46,7 @@ func updateValue(id int, val any, p Putter) error {
 }
 
 func main3() {
-	s := &Server{
+	s := &Servers{
 		store: &FooStorage{},
 	}
 	updateValue(1, "petre", s.store)
