@@ -2,50 +2,38 @@ package main
 
 import (
 	"fmt"
-	"time"
+	"sync"
 )
 
-type Server struct {
-	quitch chan struct{}
-	msgch  chan string
+type Counter struct {
+	mu    sync.Mutex
+	value int
 }
 
-func newServer() *Server {
-	return &Server{
-		quitch: make(chan struct{}),
-		msgch:  make(chan string, 128),
-	}
+func (c *Counter) Increment() {
+	c.mu.Lock()
+	c.value++
+	c.mu.Unlock()
 }
 
-func (s *Server) start() {
-	fmt.Println("starting server")
-	s.loop()
-}
-
-func (s *Server) sendMessage(msg string) {
-	s.msgch <- msg
-}
-
-func (s *Server) loop() {
-	for {
-		select {
-		case <-s.quitch:
-		case msg := <-s.msgch:
-			s.handleMessage(msg)
-		default:
-		}
-	}
-}
-
-func (s *Server) handleMessage(msg string) {
-	fmt.Println("we received a message:", msg)
+func (c *Counter) Value() int {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	return c.value
 }
 
 func main() {
-	server := newServer()
-	go server.start()
+	counter := Counter{}
+	var wg sync.WaitGroup
 
-	server.sendMessage("testing scar face")
-	time.Sleep(time.Second * 2)
+	for i := 0; i < 1000; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			counter.Increment()
+		}()
+	}
 
+	wg.Wait()
+	fmt.Println("Counter value:", counter.Value())
 }
