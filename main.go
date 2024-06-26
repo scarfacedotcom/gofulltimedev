@@ -1,39 +1,45 @@
 package main
 
 import (
+	"context"
 	"fmt"
-	"sync"
+	"log"
+	"time"
 )
 
-type Counter struct {
-	mu    sync.Mutex
-	value int
-}
-
-func (c *Counter) Increment() {
-	c.mu.Lock()
-	c.value++
-	c.mu.Unlock()
-}
-
-func (c *Counter) Value() int {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-	return c.value
-}
-
 func main() {
-	counter := Counter{}
-	var wg sync.WaitGroup
+	start := time.Now()
 
-	for i := 0; i < 1000; i++ {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			counter.Increment()
-		}()
+	result, err := thirdpartyHTTPCall()
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	wg.Wait()
-	fmt.Println("Counter value:", counter.Value())
+	fmt.Printf("the response took %v -> %+v\n", time.Since(start), result)
+
+}
+
+func fetchUserID() (string, error) {
+	ctx, cancel := context.WithTimeout(time.Millisecond * 100)
+	defer cancel()
+
+	type result struct {
+		userID string
+		err    error
+	}
+
+	resultch := make(chan result, 1)
+
+	go func() {
+		res, err := thirdpartyHTTPCall()
+		resultch <- result{
+			userID: res,
+			err:    err,
+		}
+	}()
+}
+
+func thirdpartyHTTPCall() (string, error) {
+	time.Sleep(time.Millisecond * 100)
+	return "user id 1", nil
 }
