@@ -3,43 +3,37 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"time"
 )
 
 func main() {
-	start := time.Now()
+	// Create a background context
+	ctx := context.Background()
 
-	result, err := thirdpartyHTTPCall()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Printf("the response took %v -> %+v\n", time.Since(start), result)
-
-}
-
-func fetchUserID() (string, error) {
-	ctx, cancel := context.WithTimeout(time.Millisecond * 100)
+	// Create a context with a timeout of 2 seconds
+	ctx, cancel := context.WithTimeout(ctx, 2*time.Second)
 	defer cancel()
 
-	type result struct {
-		userID string
-		err    error
-	}
-
-	resultch := make(chan result, 1)
-
+	// Simulate a goroutine that performs some work
 	go func() {
-		res, err := thirdpartyHTTPCall()
-		resultch <- result{
-			userID: res,
-			err:    err,
+		// Simulate work by sleeping for 1 second
+		time.Sleep(1 * time.Second)
+
+		// Check if the context is still active
+		select {
+		case <-ctx.Done():
+			// Context was canceled or timed out
+			fmt.Println("Operation canceled or timed out:", ctx.Err())
+			return
+		default:
+			// Perform the work
+			fmt.Println("Work completed")
 		}
 	}()
-}
 
-func thirdpartyHTTPCall() (string, error) {
-	time.Sleep(time.Millisecond * 100)
-	return "user id 1", nil
+	// Wait for the work to be done
+	select {
+	case <-ctx.Done():
+		fmt.Println("Main function:", ctx.Err())
+	}
 }
