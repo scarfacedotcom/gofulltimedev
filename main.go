@@ -26,6 +26,8 @@ type Response struct {
 }
 
 func fetchUserData(ctx context.Context, userID int) (int, error) {
+	val := ctx.Value("foo")
+	fmt.Println(val.(string))
 	ctx, cancel := context.WithTimeout(ctx, time.Millisecond*500)
 	defer cancel()
 	respchn := make(chan Response)
